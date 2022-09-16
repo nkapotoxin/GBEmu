@@ -1,0 +1,15 @@
+/*build*/*
+.vs/*
+.idea
+*.o
+*.so
+*.dll
+*.exe
+.vscode
+
+# vim swap files
+*.sw?
+*.un~
+
+# mac finder crap
+*.DS_Store
