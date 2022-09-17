@@ -26,7 +26,7 @@ u8 bus_read(u16 address) {
         // Vedio RAM
         // TODO
         printf("Unimplement yet! bus read %04X\n", address);
-        NO_IMPL
+        return 0;
     } else if (address < 0xC000) {
         return cart_read(address);
     } else if (address < 0xE000) {
@@ -40,14 +40,14 @@ u8 bus_read(u16 address) {
         // OAM
         // TODO
         printf("Unimplement yet! bus read %04X\n", address);
-        NO_IMPL
+        return 0;
     } else if (address < 0xFF00) {
         return 0;
     } else if (address < 0xFF80) {
         // IO port
         // TODO
         printf("Unimplement yet! bus read %04X\n", address);
-        
+        return 0;
     } else if (address == 0xFFFF) {
         return cpu_get_ie_register();
     }
@@ -62,7 +62,6 @@ void bus_write(u16 address, u8 value) {
         // Vedio RAM
         // TODO
         printf("Unimplement yet! bus read %04X\n", address);
-        NO_IMPL
     } else if (address < 0xC000) {
         cart_write(address, value);
     } else if (address < 0xE000) {
@@ -74,14 +73,12 @@ void bus_write(u16 address, u8 value) {
         // OAM
         // TODO
         printf("Unimplement yet! bus read %04X\n", address);
-        NO_IMPL
     } else if (address < 0xFF00) {
 
     } else if (address < 0xFF80) {
         // IO port
         // TODO
         printf("Unimplement yet! bus read %04X\n", address);
-        NO_IMPL
     } else if (address == 0xFFFF) {
         cpu_set_ie_register(value);
     } else {

@@ -13,6 +13,9 @@ void fetch_data() {
     }
 
     switch (ctx.cur_inst->mode) {
+        case AM_IMP: 
+            return;
+
         case AM_NOP:
             return;
 

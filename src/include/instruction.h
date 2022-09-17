@@ -21,6 +21,7 @@ typedef enum {
 } reg_type;
 
 typedef enum {
+    AM_IMP,
     AM_NOP,
     AM_R,
     AM_R_R,
@@ -62,6 +63,12 @@ typedef enum {
     IN_DI,
     IN_HALT,
     IN_LDH,
+    IN_POP,
+    IN_PUSH,
+    IN_CALL,
+    IN_RET,
+    IN_RETI,
+    IN_RST,
 } in_type;
 
 typedef enum {
