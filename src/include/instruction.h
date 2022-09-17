@@ -72,6 +72,10 @@ typedef enum {
     IN_ADC,
     IN_SUB,
     IN_SBC,
+    IN_OR,
+    IN_AND,
+    IN_CP,
+    IN_CB,
 } in_type;
 
 typedef enum {
