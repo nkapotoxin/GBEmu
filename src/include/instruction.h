@@ -69,6 +69,9 @@ typedef enum {
     IN_RET,
     IN_RETI,
     IN_RST,
+    IN_ADC,
+    IN_SUB,
+    IN_SBC,
 } in_type;
 
 typedef enum {
