@@ -1,6 +1,7 @@
 #include <cpu.h>
 #include <bus.h>
 #include <emu.h>
+#include <interrupts.h>
 
 cpu_context ctx = {0};
 
@@ -17,6 +18,7 @@ static void fetch_instruction() {
 static void execute() {
     IN_PROC proc = inst_get_processor(ctx.cur_inst->type);
     if (!proc) {
+        printf("Not implement for %02X\n", ctx.cur_inst->type);
         NO_IMPL
     }
 
@@ -52,6 +54,22 @@ bool cpu_step() {
 
         // printf("Executing operation code: %02X  PC: %04X\n", ctx.cur_opcode, pc);
         execute();
+    } else {
+        //is halted...
+        emu_cycles(1);
+
+        if (ctx.int_flags) {
+            ctx.halted = false;
+        }
+    }
+
+    if (ctx.int_master_enabled) {
+        cpu_handle_interrupts(&ctx);
+        ctx.enabling_ime = false;
+    }
+
+    if (ctx.enabling_ime) {
+        ctx.int_master_enabled = true;
     }
 
     return true;

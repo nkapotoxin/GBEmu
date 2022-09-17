@@ -76,6 +76,12 @@ typedef enum {
     IN_AND,
     IN_CP,
     IN_CB,
+    IN_RRA,
+    IN_DAA,
+    IN_CPL,
+    IN_SCF,
+    IN_CCF,
+    IN_EI,
 } in_type;
 
 typedef enum {

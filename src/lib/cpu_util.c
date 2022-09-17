@@ -139,3 +139,11 @@ void cpu_set_reg8(reg_type rt, u8 val) {
             NO_IMPL
     }
 }
+
+u8 cpu_get_int_flags() {
+    return ctx.int_flags;
+}
+
+void cpu_set_int_flags(u8 value) {
+    ctx.int_flags = value;
+}
