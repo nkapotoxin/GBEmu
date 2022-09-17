@@ -50,6 +50,7 @@ typedef enum {
     IN_JP,
     IN_JR,
     IN_XOR,
+    IN_DI,
 } in_type;
 
 typedef enum {
@@ -70,3 +71,4 @@ typedef struct {
 } instruction;
 
 instruction *instruction_by_opcode(u8 opcode);
+char *inst_name(in_type type);
