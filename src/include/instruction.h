@@ -60,7 +60,8 @@ typedef enum {
     IN_JR,
     IN_XOR,
     IN_DI,
-    IN_HALT
+    IN_HALT,
+    IN_LDH,
 } in_type;
 
 typedef enum {

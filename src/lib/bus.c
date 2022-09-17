@@ -1,5 +1,7 @@
 #include <bus.h>
 #include <cart.h>
+#include <ram.h>
+#include <cpu.h>
 
 /**
 General Memory Map
@@ -20,19 +22,71 @@ General Memory Map
 u8 bus_read(u16 address) {
     if (address < 0x8000) {
         return cart_read(address);
+    } else if (address < 0xA000) {
+        // Vedio RAM
+        // TODO
+        printf("Unimplement yet! bus read %04X\n", address);
+        NO_IMPL
+    } else if (address < 0xC000) {
+        return cart_read(address);
+    } else if (address < 0xE000) {
+        // Work RAM
+        // TODO
+        return wram_read(address);
+    } else if (address < 0xFE00) {
+        //  Echo RAM
+        return 0;
+    } else if (address < 0xFEA0) {
+        // OAM
+        // TODO
+        printf("Unimplement yet! bus read %04X\n", address);
+        NO_IMPL
+    } else if (address < 0xFF00) {
+        return 0;
+    } else if (address < 0xFF80) {
+        // IO port
+        // TODO
+        printf("Unimplement yet! bus read %04X\n", address);
+        
+    } else if (address == 0xFFFF) {
+        return cpu_get_ie_register();
     }
 
-    printf("bus read %04X\n", address);
-    NO_IMPL
+    return hram_read(address);
 }
 
 void bus_write(u16 address, u8 value) {
     if (address < 0x8000) {
         cart_write(address, value);
-    }
+    } else if (address < 0xA000) {
+        // Vedio RAM
+        // TODO
+        printf("Unimplement yet! bus read %04X\n", address);
+        NO_IMPL
+    } else if (address < 0xC000) {
+        cart_write(address, value);
+    } else if (address < 0xE000) {
+        // Work RAM
+        wram_write(address, value);
+    } else if (address < 0xFE00) {
+        //  Echo RAM
+    } else if (address < 0xFEA0) {
+        // OAM
+        // TODO
+        printf("Unimplement yet! bus read %04X\n", address);
+        NO_IMPL
+    } else if (address < 0xFF00) {
 
-    printf("Unimplement yet! bus write %04X %02X\n", address, value);
-    // NO_IMPL
+    } else if (address < 0xFF80) {
+        // IO port
+        // TODO
+        printf("Unimplement yet! bus read %04X\n", address);
+        NO_IMPL
+    } else if (address == 0xFFFF) {
+        cpu_set_ie_register(value);
+    } else {
+        hram_write(address, value);
+    }
 }
 
 u8 bus_read16(u16 address) {

@@ -114,6 +114,8 @@ instruction instructions[0x100] = {
     [0xC3] = {IN_JP, AM_D16},
 
     // 0xEx
+    [0xE0] = {IN_LDH, AM_MR_R, RT_NONE, RT_A},
+    [0xE1] = {IN_LDH, AM_R_MR, RT_A},
     [0xE2] = {IN_LD, AM_MR_R, RT_C, RT_A},
     [0xEA] = {IN_LD, AM_A16_R, RT_NONE, RT_A},
 
@@ -144,6 +146,8 @@ char *inst_lookup[] = {
     "JR",
     "XOR",
     "DI",
+    "HALT",
+    "LDH",
 };
 
 char *inst_name(in_type type) {
