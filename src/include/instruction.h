@@ -1,0 +1,72 @@
+#pragma once
+
+#include <common.h>
+
+typedef enum {
+    RT_NONE,
+    RT_A,
+    RT_F,
+    RT_D,
+    RT_E,
+    RT_H,
+    RT_L,
+    RT_B,
+    RT_C,
+    RT_AF,
+    RT_BC,
+    RT_DE,
+    RT_HL,
+    RT_PC,
+    RT_SP,
+} reg_type;
+
+typedef enum {
+    AM_NOP,
+    AM_R,
+    AM_R_D8,
+    AM_R_D16,
+    AM_R_R,
+    AM_R_HL,
+    AM_HL_R,
+    AM_HL_D8,
+    AM_A8_R,
+    AM_A_D16,
+    AM_R_A8,
+    AM_D16_A,
+    AM_D16,
+} addr_mode;
+
+typedef enum {
+    IN_NONE,
+    IN_NOP,
+    IN_LD,
+    IN_INC,
+    IN_DEC,
+    IN_RLCA,
+    IN_ADD,
+    IN_RRCA,
+    IN_STOP,
+    IN_RLA,
+    IN_JP,
+    IN_JR,
+    IN_XOR,
+} in_type;
+
+typedef enum {
+    CT_NONE,
+    CT_NZ,
+    CT_Z,
+    CT_NC,
+    CT_C,
+} cond_type;
+
+typedef struct {
+    in_type type;
+    addr_mode mode;
+    reg_type reg_1;
+    reg_type reg_2;
+    cond_type cond;
+    u8 param;
+} instruction;
+
+instruction *instruction_by_opcode(u8 opcode);
