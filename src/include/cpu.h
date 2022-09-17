@@ -68,6 +68,10 @@ typedef struct {
 
 void cpu_init();
 bool cpu_step();
+u16 cpu_read_reg(reg_type rt);
+u16 cpu_set_reg(reg_type rt, u16 val);
+
+void fetch_data();
 
 typedef void (* IN_PROC)(cpu_context *);
 
