@@ -13,3 +13,5 @@
 
 # mac finder crap
 *.DS_Store
+
+rom/*.battery

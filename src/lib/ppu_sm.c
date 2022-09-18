@@ -3,6 +3,7 @@
 #include <cpu.h>
 #include <interrupts.h>
 #include <string.h>
+#include <cart.h>
 
 void increment_ly() {
     if (window_visible() && lcd_get_context()->ly >= lcd_get_context()->win_y &&
@@ -166,6 +167,10 @@ void ppu_mode_hblank() {
                 frame_count = 0;
 
                 printf("FPS: %d\n", fps);
+
+                if (cart_need_save()) {
+                    cart_battery_save();
+                }
             }
 
             frame_count++;
