@@ -6,6 +6,7 @@
 #include <timer.h>
 #include <dma.h>
 #include <ppu.h>
+#include <sound.h>
 
 //TODO Add Windows Alternative...
 #include <pthread.h>
@@ -21,6 +22,7 @@ void *cpu_run(void *p) {
     timer_init();
     cpu_init();
 	ppu_init();
+    sound_init();
 
     ctx.running = true;
     ctx.paused = false;
@@ -57,14 +59,12 @@ int emu_run(int argc, char **argv) {
     ui_init();
 
     pthread_t t1;
-
     if (pthread_create(&t1, NULL, cpu_run, NULL)) {
         fprintf(stderr, "FAILED TO START MAIN CPU THREAD!\n");
         return -1;
     }
 
     u32 prev_frame = 0;
-
     while(!ctx.die) {
         usleep(1000);
         ui_handle_events();
@@ -86,7 +86,8 @@ void emu_cycles(int cpu_cycles) {
             timer_tick();
             ppu_tick();
         }
-
+        
+        sound_tick(2);
         dma_tick();
     }
 }

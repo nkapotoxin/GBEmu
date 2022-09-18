@@ -4,6 +4,7 @@
 #include <dma.h>
 #include <lcd.h>
 #include <gamepad.h>
+#include <sound.h>
 
 static char serial_data[2];
 
@@ -29,8 +30,7 @@ u8 io_read(u16 address) {
     }
 
     if (BETWEEN(address, 0xFF10, 0xFF3F)) {
-        //ignore sound
-        return 0;
+        return sound_read(address);
     }
 
     if (BETWEEN(address, 0xFF40, 0xFF4B)) {
@@ -68,7 +68,7 @@ void io_write(u16 address, u8 value) {
     }
 
     if (BETWEEN(address, 0xFF10, 0xFF3F)) {
-        //ignore sound
+        sound_write(address, value);
         return;
     }
 

@@ -15,3 +15,9 @@
 *.DS_Store
 
 rom/*.battery
+rom/dmg_sound/*.battery
+rom/dmg_sound/*.sav
+rom/bank1/*.sav
+
+tmp/*
+tmp/gnuboy
