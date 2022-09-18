@@ -2,6 +2,7 @@
 #include <cart.h>
 #include <ram.h>
 #include <cpu.h>
+#include <gbio.h>
 
 /**
 General Memory Map
@@ -45,9 +46,7 @@ u8 bus_read(u16 address) {
         return 0;
     } else if (address < 0xFF80) {
         // IO port
-        // TODO
-        printf("Unimplement yet! bus read %04X\n", address);
-        return 0;
+        return io_read(address);
     } else if (address == 0xFFFF) {
         return cpu_get_ie_register();
     }
@@ -76,9 +75,8 @@ void bus_write(u16 address, u8 value) {
     } else if (address < 0xFF00) {
 
     } else if (address < 0xFF80) {
-        // IO port
-        // TODO
-        printf("Unimplement yet! bus read %04X\n", address);
+        // IO Port
+        io_write(address, value);
     } else if (address == 0xFFFF) {
         cpu_set_ie_register(value);
     } else {

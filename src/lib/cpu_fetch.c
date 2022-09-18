@@ -16,9 +16,6 @@ void fetch_data() {
         case AM_IMP: 
             return;
 
-        case AM_NOP:
-            return;
-
         case AM_R:
             ctx.fetched_data = cpu_read_reg(ctx.cur_inst->reg_1);
             return;

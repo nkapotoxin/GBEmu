@@ -22,7 +22,6 @@ typedef enum {
 
 typedef enum {
     AM_IMP,
-    AM_NOP,
     AM_R,
     AM_R_R,
     AM_MR_R,

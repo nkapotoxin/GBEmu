@@ -41,6 +41,9 @@ bool cpu_step() {
             ctx.regs.f & (1 << 4) ? 'C' : '-'
         );
 
+        char inst[16];
+        inst_to_str(&ctx, inst);
+
         printf("%08lX - %04X: %-7s (%02X %02X %02X) A: %02X F: %s BC: %02X%02X DE: %02X%02X HL: %02X%02X\n",
             emu_get_context()->ticks,
             pc, inst_name(ctx.cur_inst->type), ctx.cur_opcode,
