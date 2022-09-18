@@ -3,6 +3,8 @@
 #include <ram.h>
 #include <cpu.h>
 #include <gbio.h>
+#include <ppu.h>
+#include <dma.h>
 
 /**
 General Memory Map
@@ -25,9 +27,7 @@ u8 bus_read(u16 address) {
         return cart_read(address);
     } else if (address < 0xA000) {
         // Vedio RAM
-        // TODO
-        printf("Unimplement yet! bus read %04X\n", address);
-        NO_IMPL
+        return ppu_vram_read(address);
     } else if (address < 0xC000) {
         return cart_read(address);
     } else if (address < 0xE000) {
@@ -39,9 +39,11 @@ u8 bus_read(u16 address) {
         return 0;
     } else if (address < 0xFEA0) {
         // OAM
-        // TODO
-        printf("Unimplement yet! bus read %04X\n", address);
-        return 0x0;
+        if (dma_transferring()) {
+            return 0xFF;
+        }
+
+        return ppu_oam_read(address);
     } else if (address < 0xFF00) {
         return 0;
     } else if (address < 0xFF80) {
@@ -59,8 +61,7 @@ void bus_write(u16 address, u8 value) {
         cart_write(address, value);
     } else if (address < 0xA000) {
         // Vedio RAM
-        // TODO
-        printf("Unimplement yet! bus read %04X\n", address);
+        ppu_vram_write(address, value);
     } else if (address < 0xC000) {
         cart_write(address, value);
     } else if (address < 0xE000) {
@@ -70,8 +71,11 @@ void bus_write(u16 address, u8 value) {
         //  Echo RAM
     } else if (address < 0xFEA0) {
         // OAM
-        // TODO
-        printf("Unimplement yet! bus read %04X\n", address);
+        if (dma_transferring()) {
+            return;
+        }
+
+        ppu_oam_write(address, value);
     } else if (address < 0xFF00) {
 
     } else if (address < 0xFF80) {
