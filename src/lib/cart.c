@@ -106,7 +106,7 @@ static const char *LIC_CODE[0xA5] = {
 };
 
 const char *cart_lic_name() {
-    if (ctx.header->new_license_code < 0xA4) {
+    if (ctx.header->new_license_code <= 0xA4) {
         return LIC_CODE[ctx.header->old_license_code];
     }
 
@@ -114,7 +114,7 @@ const char *cart_lic_name() {
 }
 
 const char *cart_type_name() {
-    if (ctx.header->cartiage_type < 0xFF) {
+    if (ctx.header->cartiage_type <= 0x22) {
         return ROM_TYPES[ctx.header->cartiage_type];
     }
 
@@ -145,7 +145,7 @@ bool cart_load(char *cart) {
     ctx.header = (rom_header *)(ctx.rom_data + 0x100);
 
     // TODO(nkaptx)
-    // ctx.header->title[15] = 0;
+    ctx.header->title[15] = 0;
 
     printf("Cartridge Loaded:\n");
     printf("\t Title        : %s\n", ctx.header->title);
@@ -157,8 +157,8 @@ bool cart_load(char *cart) {
 
     // Check sum
     u16 x = 0;
-    for (u16 i=0x0134; i<=0x0140C; ++i) {
-        x = x - ctx.rom_data[i];
+    for (u16 i=0x0134; i<=0x014C; i++) {
+        x = x - ctx.rom_data[i] - 1;
     }
     printf("\t CheckSum: %s\n", (x & 0xFF)? "PASSED":"FAILED");
 
@@ -174,4 +174,5 @@ u8 cart_read(u16 address) {
 void cart_write(u16 address, u8 value) {
     // TODO: now just support no rom bank
     printf("Not implement cart write %04X %02X\n", address, value);
+    NO_IMPL
 }

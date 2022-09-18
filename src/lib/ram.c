@@ -27,5 +27,5 @@ u8 hram_read(u16 address) {
 void hram_write(u16 address, u8 value) {
     address -= 0xFF80;
 
-    ctx.wram[address] = value;
+    ctx.hram[address] = value;
 }

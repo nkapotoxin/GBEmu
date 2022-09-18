@@ -20,6 +20,6 @@ u16 stack_pop16() {
 }
 
 void stack_push16(u16 value) {
-    stack_push((value >> 8) | 0xFF);
+    stack_push((value >> 8) & 0xFF);
     stack_push(value & 0xFF);
 }

@@ -27,7 +27,7 @@ u8 bus_read(u16 address) {
         // Vedio RAM
         // TODO
         printf("Unimplement yet! bus read %04X\n", address);
-        return 0;
+        NO_IMPL
     } else if (address < 0xC000) {
         return cart_read(address);
     } else if (address < 0xE000) {
@@ -41,7 +41,7 @@ u8 bus_read(u16 address) {
         // OAM
         // TODO
         printf("Unimplement yet! bus read %04X\n", address);
-        return 0;
+        return 0x0;
     } else if (address < 0xFF00) {
         return 0;
     } else if (address < 0xFF80) {
@@ -84,7 +84,7 @@ void bus_write(u16 address, u8 value) {
     }
 }
 
-u8 bus_read16(u16 address) {
+u16 bus_read16(u16 address) {
     u16 lo = bus_read(address);
     u16 hi = bus_read(address + 1);
     

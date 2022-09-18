@@ -13,8 +13,7 @@ void fetch_data() {
     }
 
     switch (ctx.cur_inst->mode) {
-        case AM_IMP: 
-            return;
+        case AM_IMP: return;
 
         case AM_R:
             ctx.fetched_data = cpu_read_reg(ctx.cur_inst->reg_1);
@@ -51,32 +50,29 @@ void fetch_data() {
 
         case AM_R_MR: {
             u16 addr = cpu_read_reg(ctx.cur_inst->reg_2);
-            if (ctx.cur_inst->reg_1 == RT_C) {
+            if (ctx.cur_inst->reg_2 == RT_C) {
                 addr |= 0xFF00;
             }
             ctx.fetched_data = bus_read(addr);
             emu_cycles(1);
         } return;
 
-        case AM_R_HLI: {
-            u16 addr = cpu_read_reg(ctx.cur_inst->reg_2);
-            ctx.fetched_data = bus_read(addr);
+        case AM_R_HLI:
+            ctx.fetched_data = bus_read(cpu_read_reg(ctx.cur_inst->reg_2));
             emu_cycles(1);
             cpu_set_reg(RT_HL, cpu_read_reg(RT_HL) + 1);
-        } return;
+            return;
 
-        case AM_R_HLD: {
-            u16 addr = cpu_read_reg(ctx.cur_inst->reg_2);
-            ctx.fetched_data = bus_read(addr);
+        case AM_R_HLD:
+            ctx.fetched_data = bus_read(cpu_read_reg(ctx.cur_inst->reg_2));
             emu_cycles(1);
             cpu_set_reg(RT_HL, cpu_read_reg(RT_HL) - 1);
-        } return;
+            return;
 
         case AM_HLI_R:
             ctx.fetched_data = cpu_read_reg(ctx.cur_inst->reg_2);
             ctx.mem_dest = cpu_read_reg(ctx.cur_inst->reg_1);
             ctx.dest_is_mem = true;
-            emu_cycles(1);
             cpu_set_reg(RT_HL, cpu_read_reg(RT_HL) + 1);
             return;
 
@@ -84,7 +80,6 @@ void fetch_data() {
             ctx.fetched_data = cpu_read_reg(ctx.cur_inst->reg_2);
             ctx.mem_dest = cpu_read_reg(ctx.cur_inst->reg_1);
             ctx.dest_is_mem = true;
-            emu_cycles(1);
             cpu_set_reg(RT_HL, cpu_read_reg(RT_HL) - 1);
             return;
 
@@ -145,10 +140,10 @@ void fetch_data() {
             emu_cycles(1);
             u16 hi = bus_read(ctx.regs.pc + 1);
             emu_cycles(1);
-            
-            ctx.regs.pc += 2;
 
             u16 addr = lo | (hi << 8);
+            
+            ctx.regs.pc += 2;
             ctx.fetched_data = bus_read(addr);
             emu_cycles(1);
         } return;

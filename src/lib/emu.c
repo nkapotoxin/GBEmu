@@ -1,11 +1,13 @@
+#include <stdio.h>
 #include <emu.h>
 #include <cart.h>
 #include <cpu.h>
-#include <pthread.h>
 #include <ui.h>
+#include <timer.h>
+
+//TODO Add Windows Alternative...
+#include <pthread.h>
 #include <unistd.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 
 static emu_context ctx;
 
@@ -14,6 +16,7 @@ emu_context *emu_get_context() {
 }
 
 void *cpu_run(void *p) {
+    timer_init();
     cpu_init();
 
     ctx.running = true;
@@ -30,8 +33,6 @@ void *cpu_run(void *p) {
             printf("CPU Stopped\n");
             return 0;
         }
-
-        ctx.ticks++;
     }
 
     return 0;
@@ -68,5 +69,11 @@ int emu_run(int argc, char **argv) {
 }
 
 void emu_cycles(int cpu_cycles) {
-    // TODO...
+    //TODO...
+    int n = cpu_cycles * 4;
+
+    for (int i=0; i<n; i++) {
+        ctx.ticks++;
+        timer_tick();
+    }
 }

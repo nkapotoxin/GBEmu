@@ -31,5 +31,6 @@ void cpu_handle_interrupts(cpu_context *ctx) {
 
     }  else if (int_check(ctx, 0x60, IT_JOYPAD)) {
 
-    }
+    } 
 }
+
