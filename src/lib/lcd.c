@@ -4,7 +4,7 @@
 
 static lcd_context ctx;
 
-static unsigned long colors_default[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000};
+static unsigned long colors_default[4] = {0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000}; 
 
 void lcd_init() {
     ctx.lcdc = 0x91;
@@ -60,7 +60,7 @@ void lcd_write(u16 address, u8 value) {
     u8 *p = (u8 *)&ctx;
     p[offset] = value;
 
-    if (offset == 6) {
+    if (offset == 6) { 
         //0xFF46 = DMA
         dma_start(value);
     }
@@ -70,6 +70,6 @@ void lcd_write(u16 address, u8 value) {
     } else if (address == 0xFF48) {
         update_palette(value & 0b11111100, 1);
     } else if (address == 0xFF49) {
-        update_palette(value & 0b11111100, 1);
+        update_palette(value & 0b11111100, 2);
     }
 }

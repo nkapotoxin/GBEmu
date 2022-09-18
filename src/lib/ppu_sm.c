@@ -5,6 +5,11 @@
 #include <string.h>
 
 void increment_ly() {
+    if (window_visible() && lcd_get_context()->ly >= lcd_get_context()->win_y &&
+        lcd_get_context()->ly < lcd_get_context()->win_y + YRES) {
+            ppu_get_context()->window_line++;
+    }
+
     lcd_get_context()->ly++;
 
     if (lcd_get_context()->ly == lcd_get_context()->ly_compare) {
@@ -120,6 +125,7 @@ void ppu_mode_vblank() {
         if (lcd_get_context()->ly >= LINES_PER_FRAME) {
             LCDS_MODE_SET(MODE_OAM);
             lcd_get_context()->ly = 0;
+            ppu_get_context()->window_line = 0;
         }
 
         ppu_get_context()->line_ticks = 0;
