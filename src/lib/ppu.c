@@ -14,6 +14,13 @@ void ppu_init() {
     ctx.line_ticks = 0;
     ctx.video_buffer = malloc(YRES * XRES * sizeof(32));
 
+    ctx.pfc.line_x = 0;
+    ctx.pfc.pushed_x = 0;
+    ctx.pfc.fetch_x = 0;
+    ctx.pfc.pixel_fifo.size = 0;
+    ctx.pfc.pixel_fifo.head = ctx.pfc.pixel_fifo.tail = NULL;
+    ctx.pfc.cur_fetch_state = FS_TILE;
+
     lcd_init();
     LCDS_MODE_SET(MODE_OAM);
 
@@ -39,7 +46,6 @@ void ppu_tick() {
         break;
     }
 }
-
 
 void ppu_oam_write(u16 address, u8 value) {
     if (address >= 0xFE00) {

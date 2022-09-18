@@ -20,6 +20,7 @@ emu_context *emu_get_context() {
 void *cpu_run(void *p) {
     timer_init();
     cpu_init();
+	ppu_init();
 
     ctx.running = true;
     ctx.paused = false;
