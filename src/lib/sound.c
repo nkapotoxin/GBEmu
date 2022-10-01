@@ -7,7 +7,7 @@ static sound_context ctx;
 int sample_rate = 44100;
 
 #define RATE (ctx.snd.rate)
-#define WAVE (ctx.snd.wave) /* ctx.snd_mem[0x30] */
+#define WAVE (ctx.snd.wave)
 #define S1 (ctx.snd.ch[0])
 #define S2 (ctx.snd.ch[1])
 #define S3 (ctx.snd.ch[2])
@@ -80,12 +80,175 @@ int sound_submit()
 	return res;
 }
 
+void s1_init()
+{
+	S1.swcnt = 0;
+	S1.swfreq = ((R_NR14&7)<<8) + R_NR13;
+	S1.envol = R_NR12 >> 4;
+	S1.endir = (R_NR12>>3) & 1;
+	S1.endir |= S1.endir - 1;
+	S1.enlen = (R_NR12 & 7) << 15;
+	if (!S1.on) S1.pos = 0;
+	S1.on = 1;
+	S1.cnt = 0;
+	S1.encnt = 0;
+}
+
+void s2_init()
+{
+	S2.envol = R_NR22 >> 4;
+	S2.endir = (R_NR22>>3) & 1;
+	S2.endir |= S2.endir - 1;
+	S2.enlen = (R_NR22 & 7) << 15;
+	if (!S2.on) S2.pos = 0;
+	S2.on = 1;
+	S2.cnt = 0;
+	S2.encnt = 0;
+}
+
+void s3_init()
+{
+	int i;
+	if (!S3.on) S3.pos = 0;
+	S3.cnt = 0;
+	S3.on = R_NR30 >> 7;
+	if (S3.on) for (i = 0; i < 16; i++)
+		ctx.snd_mem[i+0x30] = 0x13 ^ ctx.snd_mem[i+0x31];
+}
+
+void s4_init()
+{
+	S4.envol = R_NR42 >> 4;
+	S4.endir = (R_NR42>>3) & 1;
+	S4.endir |= S4.endir - 1;
+	S4.enlen = (R_NR42 & 7) << 15;
+	S4.on = 1;
+	S4.pos = 0;
+	S4.cnt = 0;
+	S4.encnt = 0;
+}
+
+u8 sound_read(u16 address) {
+	sound_mix();
+    return ctx.snd_mem[address-0xFF00];
+}
+
+void sound_write(u16 address, u8 b) {
+	if (!(R_NR52 & 128) && (address - 0xFF00) != RI_NR52) return;
+	if (((address - 0xFF00) & 0xF0) == 0x30)
+	{
+		if (S3.on) sound_mix();
+		if (!S3.on)
+			WAVE[address - 0xFF00 -0x30] = ctx.snd_mem[address- 0xFF00] = b;
+		return;
+	}
+	sound_mix();
+	switch (address-0xFF00)
+	{
+	case RI_NR10:
+		R_NR10 = b;
+		S1.swlen = ((R_NR10>>4) & 7) << 14;
+		S1.swfreq = ((R_NR14&7)<<8) + R_NR13;
+		break;
+	case RI_NR11:
+		R_NR11 = b;
+		S1.len = (64-(R_NR11&63)) << 13;
+		break;
+	case RI_NR12:
+		R_NR12 = b;
+		S1.envol = R_NR12 >> 4;
+		S1.endir = (R_NR12>>3) & 1;
+		S1.endir |= S1.endir - 1;
+		S1.enlen = (R_NR12 & 7) << 15;
+		break;
+	case RI_NR13:
+		R_NR13 = b;
+		s1_freq();
+		break;
+	case RI_NR14:
+		R_NR14 = b;
+		s1_freq();
+		if (b & 128) s1_init();
+		break;
+	case RI_NR21:
+		R_NR21 = b;
+		S2.len = (64-(R_NR21&63)) << 13;
+		break;
+	case RI_NR22:
+		R_NR22 = b;
+		S2.envol = R_NR22 >> 4;
+		S2.endir = (R_NR22>>3) & 1;
+		S2.endir |= S2.endir - 1;
+		S2.enlen = (R_NR22 & 7) << 15;
+		break;
+	case RI_NR23:
+		R_NR23 = b;
+		s2_freq();
+		break;
+	case RI_NR24:
+		R_NR24 = b;
+		s2_freq();
+		if (b & 128) s2_init();
+		break;
+	case RI_NR30:
+		R_NR30 = b;
+		if (!(b & 128)) S3.on = 0;
+		break;
+	case RI_NR31:
+		R_NR31 = b;
+		S3.len = (256-R_NR31) << 13;
+		break;
+	case RI_NR32:
+		R_NR32 = b;
+		break;
+	case RI_NR33:
+		R_NR33 = b;
+		s3_freq();
+		break;
+	case RI_NR34:
+		R_NR34 = b;
+		s3_freq();
+		if (b & 128) s3_init();
+		break;
+	case RI_NR41:
+		R_NR41 = b;
+		S4.len = (64-(R_NR41&63)) << 13;
+		break;
+	case RI_NR42:
+		R_NR42 = b;
+		S4.envol = R_NR42 >> 4;
+		S4.endir = (R_NR42>>3) & 1;
+		S4.endir |= S4.endir - 1;
+		S4.enlen = (R_NR42 & 7) << 15;
+		break;
+	case RI_NR43:
+		R_NR43 = b;
+		s4_freq();
+		break;
+	case RI_NR44:
+		R_NR44 = b;
+		if (b & 128) s4_init();
+		break;
+	case RI_NR50:
+		R_NR50 = b;
+		break;
+	case RI_NR51:
+		R_NR51 = b;
+		break;
+	case RI_NR52:
+		R_NR52 = b;
+		if (!(R_NR52 & 128))
+			sound_off();
+		break;
+	default:
+		return;
+	}
+}
+
 void sound_mix() {
 	int s, l, r, f, n;
 
 	if (!RATE || ctx.tick < RATE) return;
-
-	// printf("cpu.snd %d\n", ctx.tick);
 	for (; ctx.tick >= RATE; ctx.tick -= RATE)
 	{
 		l = r = 0;
@@ -205,171 +368,6 @@ void sound_mix() {
 	R_NR52 = (R_NR52&0xF0) | S1.on | (S2.on<<1) | (S3.on<<2) | (S4.on<<3);
 }
 
-u8 sound_read(u16 address) {
-	sound_mix();
-    return ctx.snd_mem[address-0xFF00];
-}
-
-void s1_init()
-{
-	S1.swcnt = 0;
-	S1.swfreq = ((R_NR14&7)<<8) + R_NR13;
-	S1.envol = R_NR12 >> 4;
-	S1.endir = (R_NR12>>3) & 1;
-	S1.endir |= S1.endir - 1;
-	S1.enlen = (R_NR12 & 7) << 15;
-	if (!S1.on) S1.pos = 0;
-	S1.on = 1;
-	S1.cnt = 0;
-	S1.encnt = 0;
-}
-
-void s2_init()
-{
-	S2.envol = R_NR22 >> 4;
-	S2.endir = (R_NR22>>3) & 1;
-	S2.endir |= S2.endir - 1;
-	S2.enlen = (R_NR22 & 7) << 15;
-	if (!S2.on) S2.pos = 0;
-	S2.on = 1;
-	S2.cnt = 0;
-	S2.encnt = 0;
-}
-
-void s3_init()
-{
-	int i;
-	if (!S3.on) S3.pos = 0;
-	S3.cnt = 0;
-	S3.on = R_NR30 >> 7;
-	if (S3.on) for (i = 0; i < 16; i++)
-		ctx.snd_mem[i+0x30] = 0x13 ^ ctx.snd_mem[i+0x31];
-}
-
-void s4_init()
-{
-	S4.envol = R_NR42 >> 4;
-	S4.endir = (R_NR42>>3) & 1;
-	S4.endir |= S4.endir - 1;
-	S4.enlen = (R_NR42 & 7) << 15;
-	S4.on = 1;
-	S4.pos = 0;
-	S4.cnt = 0;
-	S4.encnt = 0;
-}
-
-void sound_write(u16 address, u8 b) {
-	if (!(R_NR52 & 128) && (address - 0xFF00) != RI_NR52) return;
-	if (((address - 0xFF00) & 0xF0) == 0x30)
-	{
-		if (S3.on) sound_mix();
-		if (!S3.on)
-			WAVE[address - 0xFF00 -0x30] = ctx.snd_mem[address- 0xFF00] = b;
-		return;
-	}
-	sound_mix();
-	switch (address-0xFF00)
-	{
-	case RI_NR10:
-		R_NR10 = b;
-		S1.swlen = ((R_NR10>>4) & 7) << 14;
-		S1.swfreq = ((R_NR14&7)<<8) + R_NR13;
-		break;
-	case RI_NR11:
-		R_NR11 = b;
-		S1.len = (64-(R_NR11&63)) << 13;
-		break;
-	case RI_NR12:
-		R_NR12 = b;
-		S1.envol = R_NR12 >> 4;
-		S1.endir = (R_NR12>>3) & 1;
-		S1.endir |= S1.endir - 1;
-		S1.enlen = (R_NR12 & 7) << 15;
-		break;
-	case RI_NR13:
-		R_NR13 = b;
-		s1_freq();
-		break;
-	case RI_NR14:
-		R_NR14 = b;
-		s1_freq();
-		if (b & 128) s1_init();
-		break;
-	case RI_NR21:
-		R_NR21 = b;
-		S2.len = (64-(R_NR21&63)) << 13;
-		break;
-	case RI_NR22:
-		R_NR22 = b;
-		S2.envol = R_NR22 >> 4;
-		S2.endir = (R_NR22>>3) & 1;
-		S2.endir |= S2.endir - 1;
-		S2.enlen = (R_NR22 & 7) << 15;
-		break;
-	case RI_NR23:
-		R_NR23 = b;
-		s2_freq();
-		break;
-	case RI_NR24:
-		R_NR24 = b;
-		s2_freq();
-		if (b & 128) s2_init();
-		break;
-	case RI_NR30:
-		R_NR30 = b;
-		if (!(b & 128)) S3.on = 0;
-		break;
-	case RI_NR31:
-		R_NR31 = b;
-		S3.len = (256-R_NR31) << 13;
-		break;
-	case RI_NR32:
-		R_NR32 = b;
-		break;
-	case RI_NR33:
-		R_NR33 = b;
-		s3_freq();
-		break;
-	case RI_NR34:
-		R_NR34 = b;
-		s3_freq();
-		if (b & 128) s3_init();
-		break;
-	case RI_NR41:
-		R_NR41 = b;
-		S4.len = (64-(R_NR41&63)) << 13;
-		break;
-	case RI_NR42:
-		R_NR42 = b;
-		S4.envol = R_NR42 >> 4;
-		S4.endir = (R_NR42>>3) & 1;
-		S4.endir |= S4.endir - 1;
-		S4.enlen = (R_NR42 & 7) << 15;
-		break;
-	case RI_NR43:
-		R_NR43 = b;
-		s4_freq();
-		break;
-	case RI_NR44:
-		R_NR44 = b;
-		if (b & 128) s4_init();
-		break;
-	case RI_NR50:
-		R_NR50 = b;
-		break;
-	case RI_NR51:
-		R_NR51 = b;
-		break;
-	case RI_NR52:
-		R_NR52 = b;
-		if (!(R_NR52 & 128))
-			sound_off();
-		break;
-	default:
-		return;
-	}
-}
-
 void sound_cleanup() {
 	SDL_CloseAudio();
 }
@@ -390,8 +388,6 @@ void sound_reset() {
 	} else {
 		ctx.snd.rate = 0;
 	}
-
-	printf("rate %d\n", ctx.snd.rate);
 
 	memcpy(ctx.snd.wave, dmgwave, 16);
 	memcpy(&ctx.snd_mem[0x30], ctx.snd.wave, 16);

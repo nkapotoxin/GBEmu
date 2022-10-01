@@ -5,7 +5,6 @@
 #include <gamepad.h>
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 
 SDL_Window *sdlWindow;
 SDL_Renderer *sdlRenderer;
@@ -18,14 +17,15 @@ SDL_Texture *sdlDebugTexture;
 SDL_Surface *debugScreen;
 
 static int scale = 4;
+int showSpeed = 1;
+int systemSpeed = 0;
+int showRenderedFrames = 0;
+int renderedFrames = 0;
 
 void ui_init() {
-
     SDL_Init(SDL_INIT_VIDEO);
-    printf("SDL INIT\n");
-    TTF_Init();
-    printf("TTF INIT\n");
 
+    int x, y;
     SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &sdlWindow, &sdlRenderer);
 
     screen = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32,
@@ -38,7 +38,11 @@ void ui_init() {
                                                 SDL_TEXTUREACCESS_STREAMING,
                                                 SCREEN_WIDTH, SCREEN_HEIGHT);
 
-
+    SDL_GetWindowPosition(sdlWindow, &x, &y);
+    SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+    SDL_SetWindowResizable(sdlWindow, SDL_TRUE);
+    systemSetTitle("GBEmu: Drag gb rom to play");
+#ifdef __DEBUG__
     SDL_CreateWindowAndRenderer(16 * 8 * scale, 32 * 8 * scale, 0,
         &sdlDebugWindow, &sdlDebugRenderer);
 
@@ -54,10 +58,8 @@ void ui_init() {
                                             SDL_TEXTUREACCESS_STREAMING,
                                             (16 * 8 * scale) + (16 * scale),
                                             (32 * 8 * scale) + (64 * scale));
-
-    int x, y;
-    SDL_GetWindowPosition(sdlWindow, &x, &y);
     SDL_SetWindowPosition(sdlDebugWindow, x + SCREEN_WIDTH + 10, y);
+#endif
 }
 
 void delay(u32 ms) {
@@ -148,15 +150,18 @@ void ui_update() {
     SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
     SDL_RenderPresent(sdlRenderer);
 
+    systemShowSpeed(0);
+#ifdef __DEBUG__
     update_dbg_window();
+#endif    
 }
 
 void ui_on_key(bool down, u32 key_code) {
-
     switch(key_code) {
         case SDLK_j: gamepad_get_state()->a = down; break;
         case SDLK_k: gamepad_get_state()->b = down; break;
         case SDLK_m: gamepad_get_state()->start = down; break;
+        case SDLK_RETURN: gamepad_get_state()->start = down; break;
         case SDLK_n: gamepad_get_state()->select = down; break;
         case SDLK_w: gamepad_get_state()->up = down; break;
         case SDLK_s: gamepad_get_state()->down = down; break;
@@ -180,5 +185,32 @@ void ui_handle_events() {
         if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_CLOSE) {
             emu_get_context()->die = true;
         }
+
+        if (e.type == SDL_DROPFILE) {
+            char *dropped_file = e.drop.file;
+            systemSetTitle(dropped_file);
+            if (run_game(dropped_file)) {
+                systemSetTitle("Load rom failed");
+                emu_get_context()->running = false;
+            }
+            SDL_free(dropped_file);
+        }
+    }
+}
+
+void systemSetTitle(const char* title)
+{
+    SDL_SetWindowTitle(sdlWindow, title);
+}
+
+void systemShowSpeed(int speed)
+{
+    systemSpeed = speed;
+
+    if (showSpeed) {
+        char buffer[80];
+        sprintf(buffer, "GBEmu - %d fps", fps);
+
+        systemSetTitle(buffer);
     }
 }

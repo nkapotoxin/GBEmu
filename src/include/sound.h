@@ -44,7 +44,7 @@ u8 sound_read(u16 address);
 void sound_write(u16 address, u8 data);
 
 int sound_init();
-void sound_tick();
+void sound_tick(int tick);
 void sound_fill(void *userdata, unsigned char *stream, int len);
 void sound_cleanup();
 void sound_mix();
@@ -52,7 +52,8 @@ void sound_off();
 void sound_dirty();
 void sound_reset();
 void sound_pause(int dopause);
-void asound_close();
+void sound_close();
+int sound_submit();
 
 const static u8 dmgwave[16] =
 {

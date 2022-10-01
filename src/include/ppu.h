@@ -70,6 +70,7 @@ static const int LINES_PER_FRAME = 154;
 static const int TICKS_PER_LINE = 456;
 static const int YRES = 144;
 static const int XRES = 160;
+extern u32 fps;
 
 typedef enum {
     FS_TILE,
