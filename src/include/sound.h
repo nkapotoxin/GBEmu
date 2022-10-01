@@ -52,7 +52,8 @@ void sound_off();
 void sound_dirty();
 void sound_reset();
 void sound_pause(int dopause);
-void asound_close();
+void sound_close();
+int sound_submit();
 
 const static u8 dmgwave[16] =
 {

@@ -14,10 +14,8 @@
 # mac finder crap
 *.DS_Store
 
-rom/*.battery
-rom/dmg_sound/*.battery
-rom/dmg_sound/*.sav
-rom/bank1/*.sav
+*.battery
+*.sav
 
 tmp/*
 tmp/gnuboy

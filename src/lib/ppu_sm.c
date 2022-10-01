@@ -5,6 +5,12 @@
 #include <string.h>
 #include <cart.h>
 
+static u32 target_frame_time = 1000 / 60;
+static long prev_frame_time = 0;
+static long start_timer = 0;
+static long frame_count = 0;
+u32 fps = 0;
+
 void increment_ly() {
     if (window_visible() && lcd_get_context()->ly >= lcd_get_context()->win_y &&
         lcd_get_context()->ly < lcd_get_context()->win_y + YRES) {
@@ -133,11 +139,6 @@ void ppu_mode_vblank() {
     }
 }
 
-static u32 target_frame_time = 1000 / 60;
-static long prev_frame_time = 0;
-static long start_timer = 0;
-static long frame_count = 0;
-
 void ppu_mode_hblank() {
     if (ppu_get_context()->line_ticks >= TICKS_PER_LINE) {
         increment_ly();
@@ -162,11 +163,9 @@ void ppu_mode_hblank() {
             }
 
             if (end - start_timer >= 1000) {
-                u32 fps = frame_count;
+                fps = frame_count;
                 start_timer = end;
                 frame_count = 0;
-
-                printf("FPS: %d\n", fps);
 
                 if (cart_need_save()) {
                     cart_battery_save();
