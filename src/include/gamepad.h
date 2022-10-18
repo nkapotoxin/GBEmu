@@ -13,6 +13,13 @@ typedef struct {
     bool right;
 } gamepad_state;
 
+typedef struct {
+    bool button_sel;
+    bool dir_sel;
+    gamepad_state controller;
+} gamepad_context;
+
+gamepad_context *gamepad_get_context();
 void gamepad_init();
 bool gamepad_button_sel();
 bool gamepad_dir_sel();

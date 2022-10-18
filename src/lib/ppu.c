@@ -12,7 +12,7 @@ ppu_context *ppu_get_context() {
 void ppu_init() {
     ctx.current_frame = 0;
     ctx.line_ticks = 0;
-    ctx.video_buffer = malloc(YRES * XRES * sizeof(32));
+    ctx.video_buffer = malloc(YRES * XRES * sizeof(u32));
 
     ctx.pfc.line_x = 0;
     ctx.pfc.pushed_x = 0;
