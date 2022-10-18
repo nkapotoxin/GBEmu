@@ -23,7 +23,7 @@ void *cpu_run(void *p) {
     timer_init();
     cpu_init();
 	ppu_init();
-    sound_init();
+    sound_init(0, 0);
 
     ctx.running = true;
     ctx.paused = false;

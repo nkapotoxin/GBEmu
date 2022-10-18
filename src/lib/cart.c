@@ -1,31 +1,11 @@
 #include <cart.h>
 #include <string.h>
 
-typedef struct {
-    char filename[1024];
-    u32 rom_size;
-    u8 *rom_data;
-    rom_header *header;
-
-    //mbc1 related data
-    bool ram_enabled;
-    bool ram_banking;
-
-    u8 *rom_bank_x;
-    u8 banking_mode;
-
-    u8 rom_bank_value;
-    u8 ram_bank_value;
-
-    u8 *ram_bank; //current selected ram bank
-    u8 *ram_banks[16]; //all ram banks
-
-    //for battery
-    bool battery; //has battery
-    bool need_save; //should save battery backup.
-} cart_context;
-
 static cart_context ctx;
+
+cart_context *cart_get_context() {
+    return &ctx;
+}
 
 bool cart_need_save() {
     return ctx.need_save;
@@ -169,6 +149,53 @@ void cart_setup_banking() {
     ctx.rom_bank_x = ctx.rom_data + 0x4000; //rom bank 1
 }
 
+void cart_save_ext_ram() {
+    if (!ctx.ram_bank) {
+        return;
+    }
+
+    memcpy(ctx.ext_ram, ctx.ram_bank, ctx.ext_ram_size);
+}
+
+
+void cart_load_ext_ram() {
+    if (!ctx.ram_bank) {
+        return;
+    }
+
+    memcpy(ctx.ram_bank, ctx.ext_ram, ctx.ext_ram_size);
+}
+
+bool cart_init(void* rom_data, size_t rom_size) {
+    ctx.rom_size = rom_size;
+    ctx.rom_data = rom_data;
+
+    ctx.header = (rom_header *)(ctx.rom_data + 0x100);
+    ctx.header->title[15] = 0;
+    ctx.battery = cart_battery();
+    ctx.need_save = false;
+    ctx.ext_ram_size = 0;
+
+    printf("Cartridge loaded:\n");
+    printf("\t Title        : %s\n", ctx.header->title);
+    printf("\t Type         : %2.2X (%s)\n", ctx.header->cartiage_type, cart_type_name());
+    printf("\t Rom Size     : %2.2X %d KB\n", ctx.header->rom_size, 32 << ctx.header->rom_size);
+    printf("\t Ram Size     : %2.2X\n", ctx.header->ram_size);
+    printf("\t Lic Code     : %2.2X (%s)\n", ctx.header->new_license_code, cart_lic_name());
+    printf("\t Rom Version  : %2.2X\n", ctx.header->mask_rom_version_number);
+
+	cart_setup_banking();
+
+    // Check sum
+    u16 x = 0;
+    for (u16 i=0x0134; i<=0x014C; i++) {
+        x = x - ctx.rom_data[i] - 1;
+    }
+    printf("\t CheckSum: %s\n", (x & 0xFF)? "PASSED":"FAILED");
+
+    return true;
+}
+
 bool cart_load(char *cart) {
     snprintf(ctx.filename, sizeof(ctx.filename), "%s", cart);
 
@@ -197,7 +224,7 @@ bool cart_load(char *cart) {
     ctx.battery = cart_battery();
     ctx.need_save = false;
 
-    printf("Cartridge Loaded:\n");
+    printf("Cartridge loaded:\n");
     printf("\t Title        : %s\n", ctx.header->title);
     printf("\t Type         : %2.2X (%s)\n", ctx.header->cartiage_type, cart_type_name());
     printf("\t Rom Size     : %2.2X %d KB\n", ctx.header->rom_size, 32 << ctx.header->rom_size);
@@ -303,7 +330,7 @@ void cart_write(u16 address, u8 value) {
 
         if (ctx.ram_banking) {
             if (cart_need_save()) {
-                cart_battery_save();
+                cart_save_ext_ram();
             }
 
             ctx.ram_bank = ctx.ram_banks[ctx.ram_bank_value];
@@ -318,9 +345,9 @@ void cart_write(u16 address, u8 value) {
 
         if (ctx.ram_banking) {
             if (cart_need_save()) {
-                cart_battery_save();
+                cart_save_ext_ram();
             }
-            
+
             ctx.ram_bank = ctx.ram_banks[ctx.ram_bank_value];
         }
     }

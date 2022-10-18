@@ -1,4 +1,8 @@
 /*build*/*
+!/*build*/Makefile
+!/*build*/EM-Makefile
+!/*build*/EM-Makefilebak
+
 .vs/*
 .idea
 *.o
