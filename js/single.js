@@ -1,7 +1,11 @@
 "use strict";
 
 // user config
+<<<<<<< HEAD
 const ROM_FILENAME = 'zelda.gb';
+=======
+const ROM_FILENAME = 'SuperBombliss.gb';
+>>>>>>> 5ba90c0 (part19 add js_emulator with wasm implement)
 const ENABLE_PAUSE = false;
 const OSGP_DEADZONE = 0.1;
 
