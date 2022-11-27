@@ -9,6 +9,10 @@
 
 cpu_context ctx = {0};
 
+cpu_context *cpu_get_context() {
+    return &ctx;
+}
+
 void cpu_init() {
     ctx.regs.pc = 0x100;
     ctx.regs.sp = 0xFFFE;

@@ -66,7 +66,7 @@ void delay(u32 ms) {
     SDL_Delay(ms);
 }
 
-u32 get_ticks() {
+u64 get_ticks() {
     return SDL_GetTicks();
 }
 

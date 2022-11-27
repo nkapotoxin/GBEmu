@@ -70,6 +70,7 @@ typedef struct {
     
 } cpu_context;
 
+cpu_context *cpu_get_context();
 void cpu_init();
 bool cpu_step();
 u16 cpu_read_reg(reg_type rt);

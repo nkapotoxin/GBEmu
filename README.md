@@ -1,6 +1,6 @@
 # GBEmu
 
-Important References:
+## Important References:
 
 https://gbdev.io/pandocs/
 
@@ -29,3 +29,25 @@ pacman -S mingw64/mingw-w64-x86_64-SDL2 mingw64/mingw-w64-x86_64-SDL2_mixer ming
 pacman -S mingw-w64-x86_64-check
 
 After above steps you should be able to build from Windows using MSYS2 just like in the videos.
+
+## Build For Original Version
+
+	cd build
+	make
+	./gbemu.exe
+	# then you can drag rom to the window to play, asdw for d-pad and jk for ab and enter for start
+
+## Build For Wasm Version
+
+	# First you should install emsdk for the build
+	cd build
+	make clean
+	make wasm
+	make deploywasm
+	cd ../js
+	# Then you can startup a web server to execute the js code, for simple you can just start a http server by python
+	like under cmd
+	python -m http.server
+
+	# You can change the rom in the js/single.js
+

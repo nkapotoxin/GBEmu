@@ -155,8 +155,8 @@ void ppu_mode_hblank() {
             ppu_get_context()->current_frame++;
 
             //calc FPS...
-            u32 end = get_ticks();
-            u32 frame_time = end - prev_frame_time;
+            u64 end = get_ticks();
+            u64 frame_time = end - prev_frame_time;
 
             if (frame_time < target_frame_time) {
                 delay((target_frame_time - frame_time));
@@ -166,10 +166,6 @@ void ppu_mode_hblank() {
                 fps = frame_count;
                 start_timer = end;
                 frame_count = 0;
-
-                if (cart_need_save()) {
-                    cart_battery_save();
-                }
             }
 
             frame_count++;

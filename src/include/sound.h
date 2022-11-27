@@ -1,7 +1,6 @@
 #pragma once
 
 #include <common.h>
-#include <SDL2/SDL.h>
 
 typedef struct {
 	int on;
@@ -27,13 +26,15 @@ typedef struct {
 	u8 *buf;
 	int pos;
     int sound_done;
-    SDL_AudioDeviceID device;
     int paused;
     snd snd;
 	int threaded;
 	u32 tick;
+	int frames;
+	int skip_frames;
 } sound_context;
 
+sound_context *sound_get_context();
 void s1_freq_d(int d);
 void s1_freq();
 void s2_freq();
@@ -43,7 +44,7 @@ void s4_freq();
 u8 sound_read(u16 address);
 void sound_write(u16 address, u8 data);
 
-int sound_init();
+int sound_init(u32 frequency, u32 frames);
 void sound_tick(int tick);
 void sound_fill(void *userdata, unsigned char *stream, int len);
 void sound_cleanup();

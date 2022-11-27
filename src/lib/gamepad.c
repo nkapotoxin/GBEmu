@@ -1,13 +1,11 @@
 #include <gamepad.h>
 #include <string.h>
 
-typedef struct {
-    bool button_sel;
-    bool dir_sel;
-    gamepad_state controller;
-} gamepad_context;
-
 static gamepad_context ctx = {0};
+
+gamepad_context *gamepad_get_context() {
+    return &ctx;
+}
 
 bool gamepad_button_sel() {
     return ctx.button_sel;
