@@ -3,7 +3,7 @@
 #include <common.h>
 
 typedef struct {
-    //registers...
+    //registers, FF40-FF4B
     u8 lcdc;
     u8 lcds;
     u8 scroll_y;
@@ -16,11 +16,37 @@ typedef struct {
     u8 win_y;
     u8 win_x;
 
+    // FF4C-FF4E, unknown
+    u8 ff4c;
+    u8 ff4e;
+    u8 ff4d;
+
+    //LCD VRAM Bank, FF4F
+    u8 vbk;
+
+    // FF50, unknown
+    u8 ff50;
+
+    //LCD VRAM DMA Transfers, FF51-FF55
+    u8 hdma1;
+    u8 hdma2;
+    u8 hdma3;
+    u8 hdma4;
+    u8 hdma5;
+
     //other data...
     u32 bg_colors[4];
     u32 sp1_colors[4];
     u32 sp2_colors[4];
 
+    //LCD Color Palettes, FF68-FF6B
+    u8 bgpi;
+    u8 bgpd;
+    u8 obpi;
+    u8 obpd;
+
+    //BGP
+    u64 bgp[8];
 } lcd_context;
 
 typedef enum {

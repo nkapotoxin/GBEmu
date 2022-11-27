@@ -55,7 +55,6 @@ void update_palette(u8 palette_data, u8 pal) {
 }
 
 void lcd_write(u16 address, u8 value) {
-
     u8 offset = (address - 0xFF40);
     u8 *p = (u8 *)&ctx;
     p[offset] = value;
